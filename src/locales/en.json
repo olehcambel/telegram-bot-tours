@@ -1,0 +1,73 @@
+{
+  "start": "Welcome to the Telegram bot! It has been created to help you find the dream tour. Enjoy!\nIf you are looking for a tour, please click the 'Find tour' button and to change language click the 'Choose language'.\nThanks for joining!",
+  "startAgain": "Hi again, ${name}!🙂\nIf you are looking for a tour, please click the 'Find tour' button and to change language click the 'Choose language'.",
+  "commands": {
+    "start": "Start",
+    "settings": "Update an own account info",
+    "createTour": "Fill the form for tour",
+    "updateUser": "Update user info",
+    "updateCurrency": "Update currency",
+    "getTgcode": "Your telegram ID",
+    "menu": "Menu with commands"
+  },
+  "messages": {
+    "cancel": "❌ Command was cancelled.",
+    "notFound": "Unrecognized command. Say what? Try /menu",
+    "success": "👌 Success. Command finished",
+    "fail": "Oops 🙁, something went wrong"
+  },
+  "validate": {
+    "validating": "Please wait validation",
+    "error": "*Validation error.*",
+    "notFound": "Your request wasn't found",
+    "roleDeny": "you dont have access with role: ${role}",
+    "noRole": "Please set role to to this action"
+  },
+  "quiz": {
+    "createTour": {
+      "peopleCount": "👨‍👩‍👧‍👦 How many adults and children are there going to be? For example: '2 a 2 c'.",
+      "dateFrom": "✈️ Choose the start day of the tour",
+      "dateTo": "Choose the end date of the tour ✈️",
+      "price": "💸 How much money are you ready to spend for your trip? For example: '- 200' or '200 -' or '200 - 500'",
+      "comment": "Please leave comment if you want to ask something",
+      "finish": "Thank you so much for your time! Have a nice day. 😊"
+    },
+    "user": {
+      "firstName": "Enter First name",
+      "lastName": "Enter Last name",
+      "email": "Enter Email",
+      "phone": "Enter Phone",
+      "username": "Enter Username",
+      "languageCode": "Enter Language Code",
+      "telegramCode": "Enter Telegram Code",
+      "role": "<empty> REMOVE ME"
+    },
+    "currency": {
+      "name": "enter name of the currency",
+      "code": "enter code of the currency"
+    }
+  },
+  "choose": {
+    "country": "🌆 What country and city do you want to go to? For example: 'France, Paris'.",
+    "role": "Choose one of the possible role.",
+    "currency": "Choose what currency are you going to pay.",
+    "status": "select one of the statuses"
+  },
+  "keyboards": {
+    "quiz": {
+      "back": "👈 Back",
+      "cancel": "❌ Cancel",
+      "reset": "⭕️ Reset"
+    },
+    "main": {
+      "findTour": "🔍 Find tour",
+      "createTour": "🔍 Create tour",
+      "settings": "⚙️ Settings",
+      "about": "❓ About",
+      "contact": "✍️ Contact"
+    }
+  },
+  "settings": {
+    "tgcode": "Your Telegram Code is ${code}"
+  }
+}
