@@ -1,6 +1,7 @@
 import { plainToClass } from 'class-transformer';
 import { getRepository } from 'typeorm';
 import User from '../entity/user';
+import { type } from '../modules/joi-types';
 import { schema, validate } from '../modules/schemas';
 import { UserDto, UserDtoUpdate } from '../types/dto/user';
 
@@ -22,7 +23,7 @@ export default class Users {
   }
 
   static async delete(id: number): Promise<void> {
-    validate(id, schema.types.id);
+    validate(id, type.id);
 
     await getRepository(User).delete({ id });
   }

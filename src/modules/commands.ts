@@ -5,17 +5,20 @@ import Country from '../entity/country';
 import Currency from '../entity/currency';
 import Form from '../entity/form';
 import FormStatus from '../entity/form-status';
+import Language from '../entity/language';
 import User from '../entity/user';
 import { camelToSnake } from '../lib/cases';
+import { saveToSession } from '../lib/session';
 import Currencies from '../services/currency.service';
 import Forms from '../services/form.service';
 import Roles from '../services/role.service';
 import Users from '../services/user.service';
 import { MessageParse } from '../types/prompt';
 import commandInfo from './command-info';
+import Logger from './logger';
 import Prompt from './prompt';
 
-const logger = console;
+const logger = Logger('commands');
 
 const commands: Commands = {
   async menu(ctx) {
@@ -55,12 +58,17 @@ const commands: Commands = {
         //   getMainKb(ctx),
         // );
       }
+      let language = 1;
+      if (ctx.from.language_code) {
+        const lang = await getRepository(Language).findOne({ code: ctx.from.language_code });
+        if (lang) language = lang.id;
+      }
 
       await Users.create({
         role: 3,
         firstName: ctx.from.first_name,
         lastName: ctx.from.last_name,
-        languageCode: ctx.from.language_code || 'en',
+        language,
         telegramCode,
         username: ctx.from.username,
       });
@@ -103,6 +111,15 @@ const commands: Commands = {
     );
 
     await Users.update({ id: result.id, [result.key]: result.value });
+
+    if (result.key === 'language') {
+      const { code } = await getRepository(Language).findOneOrFail({
+        select: ['code'],
+        where: [{ id: result.value }],
+      });
+      saveToSession(ctx, '__language_code', code);
+      ctx.i18n.locale(code);
+    }
 
     return true;
   },

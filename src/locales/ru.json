@@ -33,25 +33,36 @@
       "finish": "Большое спасибо за Ваше время! Отличного дня!  😊"
     },
     "user": {
+      "firstName": "Введи Имя",
+      "lastName": "Введи Фамилия",
+      "email": "Введи Email",
+      "phone": "Введи Телефон",
+      "username": "Введи Username",
+      "telegramCode": "Введите телеграм код"
+    },
+    "currency": {
+      "name": "enter name of the currency",
+      "code": "enter code of the currency"
+    },
+    "buttons": {
+      "noResult": "Пусто",
       "firstName": "Имя",
       "lastName": "Фамилия",
       "email": "Email",
       "phone": "Телефон",
       "username": "Username",
-      "languageCode": "Код языка",
-      "telegramCode": "Введите телеграм код",
-      "role": "Роль"
-    },
-    "currency": {
-      "name": "enter name of the currency",
-      "code": "enter code of the currency"
+      "telegramCode": "телеграм код",
+      "language": "Язык",
+      "name": "Название",
+      "code": "Код"
     }
   },
   "choose": {
     "country": "🌆 Выберите страну и город, которые хотите посетить. Например: Польша, Варшава.",
     "role": "Выбрать роль.",
     "currency": "Выбрать валюту.",
-    "status": "Выбрать статус формы."
+    "status": "Выбрать статус формы.",
+    "language": "select one of the languages"
   },
   "keyboards": {
     "quiz": {

@@ -6,13 +6,6 @@ import Currency from './currency';
 import FormStatus from './form-status';
 import User from './user';
 
-/**
-|--------------------------------------------------
-| // TODO: понять как лучше создать ДТО,
-| чтобы не было дупликатов между entities & dto
-|--------------------------------------------------
-*/
-
 @Entity('forms')
 export default class Form {
   @PrimaryGeneratedColumn() id: number;
@@ -22,16 +15,6 @@ export default class Form {
   @Column('date') dateFrom: string;
 
   @Column('date') dateTo: string;
-
-  // @Column({ length: 50, nullable: true }) phone: string;
-
-  // @Column({ length: 50 }) formCode: string;
-
-  /**
-   * range of price for tour. decide what currency will be
-   * @example 500$ OR priceFrom 500 priceTo 1000 currencyId 1 OR 500-1000$
-   */
-  // @Column({ type: 'decimal', scale: 2, precision: 5 }) price: number;
 
   @Column({ default: 0 }) priceFrom: number;
 

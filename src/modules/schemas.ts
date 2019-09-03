@@ -32,17 +32,13 @@ export const validate = <T>(object: T, schema: Schema, isServer?: boolean): T =>
 };
 
 export const schema = {
-  types: {
-    id: types.id.required(),
-    string: joi.string().required(),
-  },
   user: {
     create: joi.object().keys({
       firstName: joi.string().required(),
       lastName: joi.string(),
       username: joi.string(),
-      languageCode: joi.string(),
       telegramCode: types.id.required(),
+      language: types.id.required(),
       role: types.id.required(),
     }),
     update: joi.object().keys({
@@ -52,7 +48,7 @@ export const schema = {
       email: joi.string().email(),
       phone: joi.string(),
       username: joi.string(),
-      languageCode: joi.string(),
+      language: types.id,
       role: types.id,
     }),
   },

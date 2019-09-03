@@ -3,6 +3,7 @@ import { ContextMessageUpdate, Markup } from 'telegraf';
 import { createQueryBuilder, getRepository } from 'typeorm';
 import Country from '../entity/country';
 import Currency from '../entity/currency';
+import Language from '../entity/language';
 import Role from '../entity/role';
 import User from '../entity/user';
 import ClientError from '../lib/errors/client';
@@ -19,49 +20,41 @@ export const updateDef: UpdateDef = {
     firstName: {
       validate: type.string,
       message: 'quiz.user.firstName',
-      // buttonText: 'name',
     },
     lastName: {
       validate: type.string,
       message: 'quiz.user.lastName',
-      // buttonText: 'name',
     },
     email: {
       validate: type.string,
       message: 'quiz.user.email',
-      // buttonText: 'name',
     },
     phone: {
       validate: type.string,
       message: 'quiz.user.phone',
-      // buttonText: 'name',
     },
     username: {
       validate: type.string,
       message: 'quiz.user.username',
-      // buttonText: 'name',
     },
-    languageCode: {
-      validate: type.string,
-      message: 'quiz.user.languageCode',
-      // buttonText: 'name',
+    language: {
+      validate: type.id,
+      funcName: 'getLanguages',
+      selector: 'l.name',
     },
   },
   updateUser: {
     email: {
       validate: type.string,
       message: 'quiz.user.email',
-      // buttonText: 'name',
     },
     phone: {
       validate: type.string.email(),
       message: 'quiz.user.phone',
-      // buttonText: 'name',
     },
     role: {
       validate: type.string,
       funcName: 'getRoles',
-      // buttonText: 'name',
       selector: 'r.name',
     },
   },
@@ -69,12 +62,10 @@ export const updateDef: UpdateDef = {
     name: {
       validate: type.string,
       message: 'quiz.currency.name',
-      // buttonText: 'name',
     },
     code: {
       validate: type.string,
       message: 'quiz.currency.code',
-      // buttonText: 'currency.code',
     },
   },
 };
@@ -82,6 +73,7 @@ export const updateDef: UpdateDef = {
 const getSelect = (method: QuestionKey, defaultTable: string): string[] => {
   return Object.entries(updateDef[method]).map(([key, value]) => {
     return value.selector ? value.selector : `${defaultTable}.${key}`;
+    // value.buttonText
   });
 };
 
@@ -146,6 +138,7 @@ export const quizDefinition: QuizDefinition = {
       funcName: 'getKeysByMe',
       sql() {
         return createQueryBuilder(User, 'u')
+          .leftJoin('u.language', 'l')
           .select(getSelect('settings', 'u'))
           .where(`u.id = :id`);
       },
@@ -202,7 +195,7 @@ export const quizInterceptors = {
 };
 
 export const quizFunctions = {
-  async getKeys(state: State): Promise<PromptFunc> {
+  async getKeys(state: State, ctx: ContextMessageUpdate): Promise<PromptFunc> {
     const { sql } = quizDefinition[state.command][state.progress];
 
     if (!sql) throw new Error(`provide sql query in ${state.command}`);
@@ -212,19 +205,26 @@ export const quizFunctions = {
       .getOne();
 
     if (!result) throw new ClientError('getKeys.notFound');
+    const botMessage = [];
+    const attachment = [];
 
-    const botMessage = Object.entries<any>(result).map(([key, value]) => {
-      return `*${key}* - ${value && isObject(value) ? value.name : value || '_empty_'}`;
-    });
+    for (const [key, value] of Object.entries<any>(result)) {
+      const tKey = ctx.i18n.t(`quiz.buttons.${key}`);
+
+      botMessage.push(
+        `*${tKey}* - ${
+          value && isObject(value)
+            ? value.name
+            : value || `_${ctx.i18n.t('quiz.buttons.noResult')}_`
+        }`,
+      );
+
+      attachment.push(Markup.callbackButton(tKey, key));
+    }
 
     return [
       `Edit info. \n\n${botMessage.join('\n')}`,
-      Markup.inlineKeyboard(
-        Object.keys(updateDef[state.command]).map(button =>
-          Markup.callbackButton(button, button),
-        ),
-        { columns: 2 },
-      ),
+      Markup.inlineKeyboard(attachment, { columns: 2 }),
     ];
   },
 
@@ -242,22 +242,10 @@ export const quizFunctions = {
     return [value.message, undefined, true];
   },
 
-  async getRoles(): Promise<PromptFunc> {
-    const result = await getRepository(Role).find();
-
-    return [
-      'choose.role',
-      Markup.inlineKeyboard(result.map(r => Markup.callbackButton(r.name, String(r.id))), {
-        columns: 3,
-      }),
-      true,
-    ];
-  },
-
-  async getKeysByMe(state: State): Promise<PromptFunc> {
+  async getKeysByMe(state: State, ctx: ContextMessageUpdate): Promise<PromptFunc> {
     await quizInterceptors.getSqlMe(state);
 
-    return this.getKeys(state);
+    return this.getKeys(state, ctx);
   },
 
   confirm(state: State): PromptFunc {
@@ -282,11 +270,35 @@ export const quizFunctions = {
     ];
   },
 
+  async getRoles(): Promise<PromptFunc> {
+    const result = await getRepository(Role).find();
+
+    return [
+      'choose.role',
+      Markup.inlineKeyboard(result.map(r => Markup.callbackButton(r.name, String(r.id))), {
+        columns: 3,
+      }),
+      true,
+    ];
+  },
+
   async getCurrencies(): Promise<PromptFunc> {
     const result = await getRepository(Currency).find({ select: ['id', 'name'] });
 
     return [
       'choose.currency',
+      Markup.inlineKeyboard(result.map(r => Markup.callbackButton(r.name, String(r.id))), {
+        columns: 3,
+      }),
+      true,
+    ];
+  },
+
+  async getLanguages(): Promise<PromptFunc> {
+    const result = await getRepository(Language).find({ select: ['id', 'name'] });
+
+    return [
+      'choose.language',
       Markup.inlineKeyboard(result.map(r => Markup.callbackButton(r.name, String(r.id))), {
         columns: 3,
       }),

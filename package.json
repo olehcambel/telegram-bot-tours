@@ -16,7 +16,7 @@
     "format": "prettier --write \"./src/**/*.ts\"",
     "compile": "tsc -p tsconfig-app.json",
     "clean": "rm -rf build",
-    "typeorm": "npm run compile && node ./node_modules/.bin/typeorm",
+    "typeorm": "npm run clean && npm run compile && node ./node_modules/.bin/typeorm",
     "migration:generate": "npm run typeorm -- migration:generate --name",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
@@ -31,7 +31,7 @@
     "mysql": "^2.17.1",
     "reflect-metadata": "^0.1.13",
     "telegraf": "^3.32.0",
-    "telegraf-i18n": "^6.5.0",
+    "telegraf-i18n": "^6.6.0",
     "typeorm": "^0.2.18",
     "winston": "^3.2.1",
     "winston-transport": "^4.3.0"

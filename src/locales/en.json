@@ -1,5 +1,5 @@
 {
-  "start": "Welcome to the Telegram bot! It has been created to help you find the dream tour. Enjoy!\nIf you are looking for a tour, please click the 'Find tour' button and to change language click the 'Choose language'.\nThanks for joining!",
+  "start": "Welcome to the Telegram bot!\nIt has been created to help you find the dream tour. Enjoy!\nIf you are looking for a tour, please click the 'Find tour' button and to change language click the 'Choose language'.\nThanks for joining!",
   "startAgain": "Hi again, ${name}!🙂\nIf you are looking for a tour, please click the 'Find tour' button and to change language click the 'Choose language'.",
   "commands": {
     "start": "Start",
@@ -38,20 +38,31 @@
       "email": "Enter Email",
       "phone": "Enter Phone",
       "username": "Enter Username",
-      "languageCode": "Enter Language Code",
-      "telegramCode": "Enter Telegram Code",
-      "role": "<empty> REMOVE ME"
+      "telegramCode": "Enter Telegram Code"
     },
     "currency": {
       "name": "enter name of the currency",
       "code": "enter code of the currency"
+    },
+    "buttons": {
+      "noResult": "Empty",
+      "firstName": "firstName",
+      "lastName": "lastName",
+      "email": "email",
+      "phone": "phone",
+      "username": "username",
+      "telegramCode": "telegramCode",
+      "language": "Language",
+      "name": "Name",
+      "code": "Code"
     }
   },
   "choose": {
     "country": "🌆 What country and city do you want to go to? For example: 'France, Paris'.",
     "role": "Choose one of the possible role.",
     "currency": "Choose what currency are you going to pay.",
-    "status": "select one of the statuses"
+    "status": "select one of the statuses",
+    "language": "select one of the languages"
   },
   "keyboards": {
     "quiz": {

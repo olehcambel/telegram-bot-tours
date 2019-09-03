@@ -1,7 +1,9 @@
 import { join } from 'path';
 import Telegraf, { ContextMessageUpdate } from 'telegraf';
+import session from 'telegraf/session';
 import TelegrafI18n, { match } from 'telegraf-i18n';
 import config from '../config';
+import { snakeToCamel } from '../lib/cases';
 import ClientError from '../lib/errors/client';
 import ValidateError from '../lib/errors/validate';
 import { getMainKb } from '../lib/keyboards';
@@ -10,7 +12,7 @@ import commands from './commands';
 import Logger from './logger';
 import Prompt from './prompt';
 import PromptChats from './prompt-chats';
-import { snakeToCamel } from '../lib/cases';
+import checkLang from '../middlewares/check-lang';
 
 const logger = Logger('Telegraf');
 
@@ -21,17 +23,19 @@ class Bot {
 
   private i18n = new TelegrafI18n({
     defaultLanguage: 'en',
-    allowMissing: false,
     directory: join(__dirname, '..', '..', 'src', 'locales'),
+    useSession: true,
+    sessionName: 'session',
+    defaultLanguageOnMissing: false,
     // directory: `${__dirname}/locales`,
   });
 
   async start(): Promise<void> {
     logger.info('Starting bot');
 
-    await this.bot.launch();
-
+    this.bot.use(session());
     this.bot.use(this.i18n.middleware());
+    this.bot.use(checkLang);
 
     this.bot.on('message', async ctx => {
       this.initCmd(ctx).catch(error => {
@@ -40,18 +44,23 @@ class Bot {
     });
 
     this.bot.on('callback_query', async ctx => {
-      this.initCmd(ctx).catch(error => {
-        return this.validateError(error, ctx);
-      });
-      // try {
-      //   await this.initCmd(ctx);
-      // } catch (error) {
-      //   await this.validateError(error, ctx);
-      // }
+      // this.initCmd(ctx).catch(error => {
+      //   return this.validateError(error, ctx);
+      // });
+      try {
+        await this.initCmd(ctx);
+      } catch (error) {
+        await this.validateError(error, ctx);
+      }
     });
+
+    await this.bot.launch();
+    // this.bot.startPolling();
   }
 
   async initCmd(ctx: ContextMessageUpdate): Promise<void> {
+    // console.log(ctx.i18n.locale());
+
     if (!ctx.from) throw new Error('no ctx.from');
 
     const { message, callbackQuery } = ctx;
@@ -96,8 +105,6 @@ class Bot {
     }
 
     await ctx.reply(ctx.i18n.t('messages.notFound'), this.keyboard(ctx));
-    // await ctx.telegram.editMessageText(r.chat.id, r.message_id, r.message_id, 'fuuuu');
-    // await ctx.telegram.deleteMessage(r.chat.id, r.message_id)
   }
 
   private async validateError(error: Error, ctx: ContextMessageUpdate): Promise<void> {
@@ -164,11 +171,11 @@ class Bot {
     'keyboards.quiz.back',
     'keyboards.quiz.cancel',
     'keyboards.quiz.reset',
-    'keyboards.main.findTour',
     'keyboards.main.createTour',
     'keyboards.main.settings',
-    'keyboards.main.about',
-    'keyboards.main.contact',
+    // 'keyboards.main.findTour',
+    // 'keyboards.main.about',
+    // 'keyboards.main.contact',
   ];
 }
 

@@ -92,6 +92,7 @@ export default class Prompt {
     }
 
     let validateError = '';
+    let userMessage = params.message;
 
     if (params.command === 'reset') {
       return this.reset(ctx, state);
@@ -110,9 +111,9 @@ export default class Prompt {
     const { prop, validate, intercept } = question[state.progress];
 
     try {
-      if (prop) state.setAnswer(prop, params.message);
+      if (validate) userMessage = validator(params.message, validate);
+      if (prop) state.setAnswer(prop, userMessage);
       if (intercept) await quizInterceptors[intercept](state);
-      if (validate) /* params.message = */ validator(params.message, validate);
 
       state.progress += 1;
     } catch (error) {

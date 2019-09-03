@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import objectTransformer from '../lib/transform';
+import Language from './language';
 import Role from './role';
 
 @Entity('users')
@@ -22,10 +23,9 @@ export default class User {
   @Column({ unique: true }) telegramCode: number;
   // @Column({ unique: true }) tgCode: number;
 
-  @Column({ length: 50, default: 'en' }) languageCode: string;
-
-  // @RelationId(() => Role)
-  // roleId: number;
+  @Transform(objectTransformer(Language), { toClassOnly: true })
+  @ManyToOne(() => Language, { onDelete: 'SET NULL', onUpdate: 'CASCADE' })
+  language: Language;
 
   @Transform(objectTransformer(Role), { toClassOnly: true })
   @ManyToOne(() => Role, { onDelete: 'SET NULL', onUpdate: 'CASCADE' })

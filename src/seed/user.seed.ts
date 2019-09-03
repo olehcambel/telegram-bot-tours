@@ -1,7 +1,7 @@
-import { plainToClass } from 'class-transformer';
 import { getRepository } from 'typeorm';
 import User from '../entity/user';
 import { EntitySeed } from '../types/entity-seed';
+import LanguageSeed from './language.seed';
 import RoleSeed from './role.seed';
 
 export const seed = [
@@ -11,9 +11,8 @@ export const seed = [
     lastName: 'Cambel',
     username: 'olehcambel',
     telegramCode: 312577109,
-    languageCode: 'en',
-    // role: { id: 1 },
-    role: 1,
+    language: { id: 1 },
+    role: { id: 1 },
   },
   {
     id: 2,
@@ -21,9 +20,8 @@ export const seed = [
     lastName: 'Js',
     email: 'svelte@js.ru',
     telegramCode: 2,
-    languageCode: 'ru',
-    // role: { id: 3 },
-    role: 3,
+    language: { id: 2 },
+    role: { id: 3 },
   },
 ];
 
@@ -34,11 +32,9 @@ export default class UserSeed implements EntitySeed {
     const exist = await this.repo.findOne();
     if (exist) return false;
 
-    await new RoleSeed().up();
+    await Promise.all([new RoleSeed().up(), new LanguageSeed().up()]);
 
-    const classSeed = plainToClass(User, seed);
-
-    await this.repo.insert(classSeed);
+    await this.repo.insert(seed);
     return true;
   }
 }
