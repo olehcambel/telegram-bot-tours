@@ -1,6 +1,6 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class createBase1567514236939 implements MigrationInterface {
+export class createBase1567703124959 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.query("CREATE TABLE `countries` (`id` int NOT NULL AUTO_INCREMENT, `name` varchar(50) NOT NULL, `code` varchar(2) NOT NULL, UNIQUE INDEX `IDX_b47cbb5311bad9c9ae17b8c1ed` (`code`), PRIMARY KEY (`id`)) ENGINE=InnoDB");
@@ -9,19 +9,19 @@ export class createBase1567514236939 implements MigrationInterface {
         await queryRunner.query("CREATE TABLE `languages` (`id` int NOT NULL AUTO_INCREMENT, `name` varchar(50) NOT NULL, `code` varchar(2) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
         await queryRunner.query("CREATE TABLE `roles` (`id` int NOT NULL AUTO_INCREMENT, `name` varchar(50) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
         await queryRunner.query("CREATE TABLE `users` (`id` int NOT NULL AUTO_INCREMENT, `firstName` varchar(50) NOT NULL, `lastName` varchar(50) NULL, `email` varchar(50) NULL, `phone` varchar(50) NULL, `username` varchar(50) NULL, `telegramCode` int NOT NULL, `languageId` int NULL, `roleId` int NULL, UNIQUE INDEX `IDX_ef8ef8d543e43f6e113289b50a` (`telegramCode`), PRIMARY KEY (`id`)) ENGINE=InnoDB");
-        await queryRunner.query("CREATE TABLE `forms` (`id` int NOT NULL AUTO_INCREMENT, `peopleCount` varchar(50) NOT NULL, `dateFrom` date NOT NULL, `dateTo` date NOT NULL, `priceFrom` int NOT NULL DEFAULT 0, `priceTo` int NULL, `comment` varchar(200) NOT NULL, `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `currencyId` int NULL, `countryId` int NULL, `formStatusId` int NULL, `userId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
-        await queryRunner.query("CREATE TABLE `tours` (`id` int NOT NULL AUTO_INCREMENT, `name` varchar(50) NOT NULL, `city` varchar(50) NOT NULL, `hotelUrl` text NOT NULL, `coverUrl` text NULL, `dateFrom` date NOT NULL, `dateTo` date NOT NULL, `price` int NOT NULL DEFAULT 0, `currencyId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
+        await queryRunner.query("CREATE TABLE `forms` (`id` int NOT NULL AUTO_INCREMENT, `peopleCount` varchar(50) NOT NULL, `dateFrom` date NOT NULL, `dateTo` date NOT NULL, `priceFrom` int NOT NULL DEFAULT 0, `priceTo` int NULL, `comment` varchar(200) NULL, `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `currencyId` int NULL, `countryId` int NULL, `formStatusId` int NULL, `userId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
+        await queryRunner.query("CREATE TABLE `tours` (`id` int NOT NULL AUTO_INCREMENT, `name` varchar(50) NOT NULL, `city` varchar(50) NOT NULL, `dateFrom` date NOT NULL, `dateTo` date NOT NULL, `price` int NOT NULL DEFAULT 0, `description` text NULL, `hotelUrl` text NOT NULL, `coverUrl` text NULL, `countryId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
         await queryRunner.query("ALTER TABLE `users` ADD CONSTRAINT `FK_43e931f63c91f094d879aeeea29` FOREIGN KEY (`languageId`) REFERENCES `languages`(`id`) ON DELETE SET NULL ON UPDATE CASCADE");
         await queryRunner.query("ALTER TABLE `users` ADD CONSTRAINT `FK_368e146b785b574f42ae9e53d5e` FOREIGN KEY (`roleId`) REFERENCES `roles`(`id`) ON DELETE SET NULL ON UPDATE CASCADE");
         await queryRunner.query("ALTER TABLE `forms` ADD CONSTRAINT `FK_8c85700c703e4e9ffd4520dad40` FOREIGN KEY (`currencyId`) REFERENCES `currencies`(`id`) ON DELETE SET NULL ON UPDATE CASCADE");
         await queryRunner.query("ALTER TABLE `forms` ADD CONSTRAINT `FK_1a70abfe9ece6e3d8bd45b5eda5` FOREIGN KEY (`countryId`) REFERENCES `countries`(`id`) ON DELETE SET NULL ON UPDATE CASCADE");
         await queryRunner.query("ALTER TABLE `forms` ADD CONSTRAINT `FK_be5c364bf40a793da7e75752d95` FOREIGN KEY (`formStatusId`) REFERENCES `formStatuses`(`id`) ON DELETE SET NULL ON UPDATE CASCADE");
         await queryRunner.query("ALTER TABLE `forms` ADD CONSTRAINT `FK_08f0ffcce17394ec4aafcbed2f9` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE");
-        await queryRunner.query("ALTER TABLE `tours` ADD CONSTRAINT `FK_fbff3324872cb3f7529df5a3707` FOREIGN KEY (`currencyId`) REFERENCES `currencies`(`id`) ON DELETE CASCADE ON UPDATE CASCADE");
+        await queryRunner.query("ALTER TABLE `tours` ADD CONSTRAINT `FK_1ea080456806b56b102967bd511` FOREIGN KEY (`countryId`) REFERENCES `countries`(`id`) ON DELETE CASCADE ON UPDATE CASCADE");
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.query("ALTER TABLE `tours` DROP FOREIGN KEY `FK_fbff3324872cb3f7529df5a3707`");
+        await queryRunner.query("ALTER TABLE `tours` DROP FOREIGN KEY `FK_1ea080456806b56b102967bd511`");
         await queryRunner.query("ALTER TABLE `forms` DROP FOREIGN KEY `FK_08f0ffcce17394ec4aafcbed2f9`");
         await queryRunner.query("ALTER TABLE `forms` DROP FOREIGN KEY `FK_be5c364bf40a793da7e75752d95`");
         await queryRunner.query("ALTER TABLE `forms` DROP FOREIGN KEY `FK_1a70abfe9ece6e3d8bd45b5eda5`");

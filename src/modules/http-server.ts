@@ -1,12 +1,10 @@
-import express from 'express';
 import { createServer } from 'http';
 import config from '../config';
 import Logger from './logger';
 
 const logger = Logger('Http-server');
-const app = express();
 
-const httpServer = createServer(app);
+const httpServer = createServer();
 export async function start(): Promise<void> {
   if (httpServer.listening) throw new Error('HTTP Server is already listening');
 

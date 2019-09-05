@@ -1,7 +1,7 @@
 import { ContextMessageUpdate } from 'telegraf';
 import ClientError from '../lib/errors/client';
 import ValidateError from '../lib/errors/validate';
-import { getQuizKb } from '../lib/keyboards';
+import { getQuizKb, getMainKb } from '../lib/keyboards';
 import { Attachment, MessageParse, PromptFunc, State } from '../types/prompt';
 import { QuestionKey } from '../types/quiz-key';
 import PromptChats from './prompt-chats';
@@ -9,7 +9,8 @@ import { FunctionsKey, quizDefinition, quizFunctions, quizInterceptors } from '.
 import { validate as validator } from './schemas';
 
 interface Extra {
-  attachment?: Attachment;
+  initAttach?: Attachment;
+  initMessage?: string;
 }
 
 export default class Prompt {
@@ -29,13 +30,13 @@ export default class Prompt {
 
     const telegramCode = ctx.from.id;
     const question = quizDefinition[command][0];
-    const initMessage = question.message || '';
+    const initMessage = extra.initMessage || question.message || '';
 
     await ctx.reply('keyboards.quiz.initMsg', getQuizKb(ctx).quizKbInit);
 
     if (initMessage) {
       await ctx.reply(question.isI18n ? ctx.i18n.t(initMessage) : initMessage, {
-        reply_markup: extra.attachment,
+        reply_markup: extra.initAttach,
       });
     }
 
@@ -83,7 +84,7 @@ export default class Prompt {
     params: MessageParse,
     ctx: ContextMessageUpdate,
   ): Promise<boolean> {
-    if (!ctx.from || !ctx.chat) throw new Error('no user info provided');
+    if (!ctx.from) throw new Error('no ctx.from');
 
     const state = PromptChats.getState(ctx.from.id);
 
@@ -92,7 +93,7 @@ export default class Prompt {
     }
 
     let validateError = '';
-    let userMessage = params.message;
+    const userMessage = params.message;
 
     if (params.command === 'reset') {
       return this.reset(ctx, state);
@@ -103,15 +104,11 @@ export default class Prompt {
       return true;
     }
 
-    if (state.progress === 0) {
-      await ctx.reply('keyboards.quiz.msg', getQuizKb(ctx).quizKb);
-    }
-
     const question = quizDefinition[state.command];
     const { prop, validate, intercept } = question[state.progress];
 
     try {
-      if (validate) userMessage = validator(params.message, validate);
+      if (validate) /* userMessage = */ validator(params.message, validate);
       if (prop) state.setAnswer(prop, userMessage);
       if (intercept) await quizInterceptors[intercept](state);
 
@@ -123,8 +120,16 @@ export default class Prompt {
     }
 
     if (question.length === state.progress) {
+      await ctx.reply(ctx.i18n.t('validate.validating'), getMainKb(ctx));
+      if (state.answers.confirm) {
+        delete state.answers.confirm;
+      }
       state.resolve(state.answers);
       return true;
+    }
+
+    if (state.progress === 1) {
+      await ctx.reply('keyboards.quiz.msg', getQuizKb(ctx).quizKb);
     }
 
     const { message, funcName, attachment, isI18n } = question[state.progress];
@@ -156,8 +161,8 @@ export default class Prompt {
     messageError: string = '',
   ): Promise<PromptFunc> {
     if (!ctx.from) throw new Error('ctx.from not exist');
-    const state = PromptChats.getState(ctx.from.id);
 
+    const state = PromptChats.getState(ctx.from.id);
     const [funcMessage, funcAttach, isTranslate] = await quizFunctions[funcName](state, ctx);
 
     await this.replyOrEdit(

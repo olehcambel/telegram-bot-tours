@@ -1,4 +1,5 @@
 import { plainToClass } from 'class-transformer';
+import { ContextMessageUpdate } from 'telegraf';
 import { getRepository } from 'typeorm';
 import User from '../entity/user';
 import { type } from '../modules/joi-types';
@@ -26,5 +27,11 @@ export default class Users {
     validate(id, type.id);
 
     await getRepository(User).delete({ id });
+  }
+
+  static getTgCode(ctx: ContextMessageUpdate): number {
+    if (!ctx.from) throw new Error('no ctx.from');
+
+    return ctx.from.id;
   }
 }

@@ -1,8 +1,8 @@
 import { getRepository } from 'typeorm';
 import Form from '../entity/form';
-import CreateFormStatus from './form-status.seed';
-import CreateUser from './user.seed';
-import CreateCurrency from './currency.seed';
+import FormStatusSeed from './form-status.seed';
+import UserSeed from './user.seed';
+import CurrencySeed from './currency.seed';
 
 export const seed = [
   {
@@ -49,9 +49,9 @@ export default class FormSeed {
     if (exist) return false;
 
     await Promise.all([
-      new CreateUser().up(),
-      new CreateFormStatus().up(),
-      new CreateCurrency().up(),
+      new UserSeed().up(),
+      new FormStatusSeed().up(),
+      new CurrencySeed().up(),
     ]);
 
     await this.repo.insert(seed);

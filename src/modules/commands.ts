@@ -1,45 +1,30 @@
 import { ContextMessageUpdate, Markup } from 'telegraf';
-import { createQueryBuilder, getRepository } from 'typeorm';
+import { getRepository } from 'typeorm';
+import { format } from 'util';
 import config from '../config';
-import Country from '../entity/country';
 import Currency from '../entity/currency';
-import Form from '../entity/form';
 import FormStatus from '../entity/form-status';
 import Language from '../entity/language';
 import User from '../entity/user';
 import { camelToSnake } from '../lib/cases';
+import ClientError from '../lib/errors/client';
 import { saveToSession } from '../lib/session';
 import Currencies from '../services/currency.service';
 import Forms from '../services/form.service';
+import Prices from '../services/price.service';
 import Roles from '../services/role.service';
+import Tours from '../services/tour.service';
 import Users from '../services/user.service';
+import { PromptFindTour, PromptSettings } from '../types/commands';
 import { MessageParse } from '../types/prompt';
 import commandInfo from './command-info';
 import Logger from './logger';
 import Prompt from './prompt';
 
 const logger = Logger('commands');
+const currencyCode = 'USD';
 
 const commands: Commands = {
-  async menu(ctx) {
-    if (!ctx.from) throw new Error('no ctx.from');
-
-    const role = await Roles.getUserRole(ctx.from.id);
-    const result = [];
-
-    for (const [commandName, { roles }] of Object.entries(commandInfo)) {
-      if (roles.length === 0 || roles.includes(role)) {
-        result.push(
-          `/${camelToSnake(commandName)} - ${ctx.i18n.t(`commands.${commandName}`)}`,
-        );
-      }
-    }
-
-    await ctx.reply(`${ctx.i18n.t('messages.success')}\n\n${result.join('\n')}`);
-
-    return false;
-  },
-
   async start(ctx) {
     await ctx.reply(ctx.i18n.t('validate.validating'));
 
@@ -86,29 +71,27 @@ const commands: Commands = {
     // return false;
   },
 
-  async register(ctx) {
-    if (!ctx.from) throw new Error('no ctx.from');
-    const roles = ['manager'];
+  async menu(ctx) {
+    const tgCode = Users.getTgCode(ctx);
 
-    await Roles.check(ctx.from.id, roles);
+    const role = await Roles.getUserRole(tgCode);
+    const result = [];
 
-    const result = await Prompt.start('register', ctx);
+    for (const [commandName, { roles }] of Object.entries(commandInfo)) {
+      if (roles.length === 0 || roles.includes(role)) {
+        result.push(
+          `/${camelToSnake(commandName)} - ${ctx.i18n.t(`commands.${commandName}`)}`,
+        );
+      }
+    }
 
-    logger.info(result);
-    return true;
-  },
+    await ctx.reply(`${ctx.i18n.t('messages.success')}\n\n${result.join('\n')}`);
 
-  async getTgcode(ctx) {
-    if (!ctx.from) throw new Error('no ctx.from');
-
-    return { message: 'settings.tgcode', templateDate: { code: ctx.from.id } };
+    return false;
   },
 
   async settings(ctx) {
-    const result = await Prompt.start<{ id: number; key: string; value: string }>(
-      'settings',
-      ctx,
-    );
+    const result = await Prompt.start<PromptSettings>('settings', ctx);
 
     await Users.update({ id: result.id, [result.key]: result.value });
 
@@ -124,12 +107,35 @@ const commands: Commands = {
     return true;
   },
 
+  async about(ctx) {
+    const inlineKb = Markup.inlineKeyboard([
+      Markup.urlButton('GitHub', 'https://github.com/olehcambel'),
+    ]);
+
+    await ctx.replyWithMarkdown(ctx.i18n.t('other.about'), inlineKb.extra());
+
+    return false;
+  },
+
+  async contact(ctx) {
+    const { string: message } = await Prompt.start('getString', ctx, {
+      initMessage: ctx.i18n.t('quiz.contact.writeToDev'),
+    });
+
+    const msg = `From: ${format(ctx.from)}\n\nMessage: ${message}`;
+
+    await ctx.telegram.sendMessage(config.channel.support, msg);
+    await ctx.reply(ctx.i18n.t('quiz.contact.messageDelivered'));
+
+    return false;
+  },
+
   async updateUser(ctx) {
-    if (!ctx.from) throw new Error('no ctx.from');
+    const tgCode = Users.getTgCode(ctx);
 
     const { roles } = commandInfo.updateUser;
 
-    await Roles.check(ctx.from.id, roles);
+    await Roles.check(tgCode, roles);
 
     const result = await Prompt.start<{ id: number; key: string; value: string }>(
       'updateUser',
@@ -142,18 +148,18 @@ const commands: Commands = {
   },
 
   async updateCurrency(ctx) {
-    if (!ctx.from) throw new Error('no ctx.from');
+    const tgCode = Users.getTgCode(ctx);
 
     const { roles } = commandInfo.updateCurrency;
 
-    await Roles.check(ctx.from.id, roles);
+    await Roles.check(tgCode, roles);
 
     const currencies = await getRepository(Currency).find({ select: ['id', 'name'] });
     const attachment = Markup.inlineKeyboard(
       currencies.map(currency => Markup.callbackButton(currency.name, String(currency.id))),
     );
 
-    const result = await Prompt.start('updateCurrency', ctx, { attachment });
+    const result = await Prompt.start('updateCurrency', ctx, { initAttach: attachment });
 
     await Currencies.update({ id: result.id, [result.key]: result.value });
 
@@ -161,45 +167,20 @@ const commands: Commands = {
   },
 
   async formStatus(ctx, { message }) {
-    if (!message || !ctx.from) throw new Error('no message or ctx.from');
+    if (!message) throw new ClientError('no message');
+    const tgcode = Users.getTgCode(ctx);
 
     const roles = ['manager', 'watcher'];
-    await Roles.check(ctx.from.id, roles);
+    await Roles.check(tgcode, roles);
 
     const parsed = message.split('=');
 
     if (parsed.length !== 2) {
-      // throw new Error()
       return { message: 'messages.fail' };
     }
 
-    const formId = Number(parsed[1]);
     const [statusName] = parsed;
-
-    const form = await createQueryBuilder(Form, 'f')
-      .select([
-        'u.firstName',
-        'u.lastName',
-        'u.email',
-        'u.phone',
-        'u.username',
-        'f.id',
-        'cur.code',
-        'c.name',
-        'f.peopleCount',
-        'f.dateFrom',
-        'f.dateTo',
-        'f.priceFrom',
-        'f.priceTo',
-        'f.comment',
-      ])
-      .innerJoin('f.user', 'u')
-      .innerJoin('f.country', 'c')
-      .innerJoin('f.currency', 'cur')
-      .where('f.id = :id', { id: formId })
-      .getOne();
-
-    if (!form) throw new Error(`no form with id ${formId}`);
+    const formId = Number(parsed[1]);
 
     const statuses = await getRepository(FormStatus).find();
     const status = statuses.find(status => status.name === statusName);
@@ -208,22 +189,29 @@ const commands: Commands = {
       throw new Error(`invalid status ${statusName}`);
     }
 
+    const form = await Forms.get(formId);
     const botMessage = Forms.formatForm({
       comment: form.comment,
       user: form.user,
       country: form.country,
       currency: form.currency,
       price: { priceFrom: form.priceFrom, priceTo: form.priceTo },
-      formStatus: status.name,
+      status,
       formId: form.id,
       peopleCount: form.peopleCount,
-      dateFrom: form.dateFrom,
-      dateTo: form.dateTo,
+      date: {
+        dateFrom: form.dateFrom,
+        dateTo: form.dateTo,
+      },
     });
 
-    const replyMarkup = Forms.formatKeyboard({ formId, statuses, exclude: [status.id] });
+    const replyMarkup = Forms.formatKeyboard({
+      formId: form.id,
+      statuses,
+      exclude: [status.id],
+    });
 
-    await Forms.update({ id: Number(formId), formStatus: status.id });
+    await Forms.update({ id: form.id, formStatus: status.id });
     await ctx.editMessageText(botMessage, {
       reply_markup: replyMarkup,
       parse_mode: 'Markdown',
@@ -233,63 +221,85 @@ const commands: Commands = {
   },
 
   async createTour(ctx) {
-    const data = await Prompt.start('createTour', ctx);
+    const data = await Prompt.start<PromptFindTour>('createTour', ctx);
 
-    data.user = data.id;
-
-    const priceReg = data.price.match(/^(\d+)?\s?-\s?(\d+)?$/);
-    delete data.id;
-    delete data.confirm;
-    delete data.price;
-
-    if (!priceReg) throw new Error('price not matched');
-
-    const [, priceFrom = 0, priceTo] = priceReg;
-
-    const user = await getRepository(User).findOneOrFail(data.user, {
-      select: ['username', 'firstName', 'lastName', 'phone', 'email'],
-    });
-    const country = await getRepository(Country).findOneOrFail(data.countryId, {
-      select: ['name'],
-    });
-    const currency = await getRepository(Currency).findOneOrFail(data.currencyId, {
+    const currency = await getRepository(Currency).findOneOrFail(data.currency, {
       select: ['code'],
     });
-    const statuses = await getRepository(FormStatus).find();
-    const formStatus = 1; // as 'open'
 
-    Object.assign(data, { priceFrom, priceTo, formStatus });
+    let diffPrice = 1;
 
-    const { id } = await Forms.create(data);
+    if (currency.code !== 'USD') {
+      // fetch current currency ??
+      diffPrice = 1;
+    }
 
-    const botMessage = Forms.formatForm({
-      formStatus: statuses[0].name,
-      comment: data.comment,
+    const price = Prices.extractPrice(data.price, diffPrice);
+    const date = { dateFrom: data.dateFrom, dateTo: data.dateTo };
+    const { country } = data;
+    let comment: string | undefined;
+
+    const tours = await Tours.get({ date, price, country });
+
+    if (tours) {
+      await Promise.all(
+        tours.map(entity => {
+          const caption =
+            `Tour: #${entity.id}, ${entity.name}` +
+            `\n${entity.description ? `\n${entity.description}` : ''}` +
+            `\nPlace: ${entity.country.name}, ${entity.city}` +
+            `\nPrice: ${entity.price} ${currencyCode}` +
+            `\nDate: ${entity.dateFrom} - ${entity.dateTo}`;
+
+          return ctx
+            .replyWithPhoto(entity.coverUrl || 'https://picsum.photos/200/300/?random', {
+              caption,
+              reply_markup: Markup.inlineKeyboard([
+                Markup.urlButton('Hotel', entity.hotelUrl),
+              ]),
+            })
+            .catch(error => logger.error(error));
+        }),
+      );
+    } else {
+      const { string } = await Prompt.start('getString', ctx, {
+        initMessage: ctx.i18n.t('quiz.createTour.comment'),
+        initAttach: Markup.inlineKeyboard([
+          Markup.callbackButton(ctx.i18n.t('keyboards.quiz.skip'), '-'),
+        ]),
+      });
+
+      comment = string;
+    }
+
+    const formStatus = tours ? 2 : 1; // as 'open'
+    const baseForm = {
       peopleCount: data.peopleCount,
-      dateFrom: data.dateFrom,
-      dateTo: data.dateTo,
-      formId: id,
+      formStatus,
+      user: data.id,
       country,
-      currency,
-      price: {
-        priceFrom,
-        priceTo,
-      },
-      user,
-    });
+      currency: data.currency,
+      comment,
+    };
 
-    const replyMarkup = Forms.formatKeyboard({
-      formId: id,
-      statuses,
-      exclude: [formStatus],
-    });
+    const { id: formId } = await Forms.create({ ...price, ...date, ...baseForm });
 
-    await ctx.telegram.sendMessage(config.channel.admin, botMessage, {
+    if (tours) return { message: 'quiz.createTour.found' };
+
+    const result = await Forms.formatReplyAdmin({ price, date, ...baseForm, formId });
+
+    await ctx.telegram.sendMessage(config.channel.admin, result.message, {
       parse_mode: 'Markdown',
-      reply_markup: replyMarkup,
+      reply_markup: result.attachment,
     });
 
     return { message: 'quiz.createTour.finish' };
+  },
+
+  async getTgcode(ctx) {
+    const code = Users.getTgCode(ctx);
+
+    return { message: 'other.tgcode', templateDate: { code } };
   },
 };
 

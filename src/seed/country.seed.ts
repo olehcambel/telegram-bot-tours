@@ -3,18 +3,22 @@ import Country from '../entity/country';
 
 export const seed = [
   {
+    id: 1,
     name: 'United States',
     code: 'US',
   },
   {
+    id: 2,
     name: 'United Kingdom',
     code: 'GB',
   },
   {
+    id: 3,
     name: 'Singapore',
     code: 'SG',
   },
   {
+    id: 4,
     name: 'France',
     code: 'FR',
   },

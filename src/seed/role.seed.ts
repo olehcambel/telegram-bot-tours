@@ -3,12 +3,15 @@ import Role from '../entity/role';
 
 export const seed = [
   {
+    id: 1,
     name: 'manager',
   },
   {
+    id: 2,
     name: 'watcher',
   },
   {
+    id: 3,
     name: 'user',
   },
 ];

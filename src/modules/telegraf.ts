@@ -35,7 +35,7 @@ class Bot {
 
     this.bot.use(session());
     this.bot.use(this.i18n.middleware());
-    this.bot.use(checkLang);
+    this.bot.use(checkLang());
 
     this.bot.on('message', async ctx => {
       this.initCmd(ctx).catch(error => {
@@ -55,7 +55,6 @@ class Bot {
     });
 
     await this.bot.launch();
-    // this.bot.startPolling();
   }
 
   async initCmd(ctx: ContextMessageUpdate): Promise<void> {
@@ -91,12 +90,9 @@ class Bot {
 
         if (commandMessage) {
           if (typeof commandMessage === 'boolean') {
-            await ctx.reply(ctx.i18n.t('messages.success'), this.keyboard(ctx));
+            await ctx.reply(ctx.i18n.t('messages.success'));
           } else {
-            await ctx.reply(
-              ctx.i18n.t(commandMessage.message, commandMessage.templateDate),
-              this.keyboard(ctx),
-            );
+            await ctx.reply(ctx.i18n.t(commandMessage.message, commandMessage.templateDate));
           }
         }
 
@@ -121,6 +117,7 @@ class Bot {
           await ctx.answerCbQuery(message);
         }
 
+        logger.verbose(error);
         return;
       }
       if (error instanceof ValidateError) {
@@ -173,9 +170,9 @@ class Bot {
     'keyboards.quiz.reset',
     'keyboards.main.createTour',
     'keyboards.main.settings',
+    'keyboards.main.contact',
+    'keyboards.main.about',
     // 'keyboards.main.findTour',
-    // 'keyboards.main.about',
-    // 'keyboards.main.contact',
   ];
 }
 

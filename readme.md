@@ -22,6 +22,9 @@ $ npm run compile && npm start
 ```
 start - Start
 settings - Update an own account info
+contact - Ask question to support
+about - Info about author of the project
+menu - Menu with available command to related role
 create_tour - Fill the form for tour
 update_user - Update user info
 update_currency - Update currency
@@ -36,6 +39,7 @@ IS_LOG_CHANNEL = false
 CONSOLE_LOG_LEVEL = info
 CHANNEL_LOG_LEVEL = error
 CHANNEL_ADMIN = 
+CHANNEL_SUPPORT = 
 CHANNEL_LOG_ID = 
 HTTP_PORT = 4999
 

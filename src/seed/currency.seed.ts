@@ -3,14 +3,17 @@ import Currency from '../entity/currency';
 
 export const currency = [
   {
+    id: 1,
     name: 'dollar',
     code: 'USD',
   },
   {
+    id: 2,
     name: 'euro',
     code: 'EUR',
   },
   {
+    id: 3,
     name: 'bitcoin',
     code: 'BTC',
   },

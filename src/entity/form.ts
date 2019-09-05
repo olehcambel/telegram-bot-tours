@@ -14,13 +14,15 @@ export default class Form {
 
   @Column('date') dateFrom: string;
 
+  // @Column() nightsCount: number;
+
   @Column('date') dateTo: string;
 
   @Column({ default: 0 }) priceFrom: number;
 
   @Column({ nullable: true }) priceTo?: number;
 
-  @Column({ length: 200 }) comment: string;
+  @Column({ length: 200, nullable: true }) comment?: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) readonly createdAt: Date;
 

@@ -13,7 +13,7 @@ const joiErrorObject = (errors: ValidationError): ErrorObjectResult => {
   const error = errors.details[0];
 
   if (error.message) message = error.message;
-  if (error.path.length > 0) [property] = error.path;
+  if (error.path.length > 0) [property] = String(error.path);
 
   return { message, property };
 };
@@ -70,7 +70,7 @@ export const schema = {
       peopleCount: joi.string().required(),
       dateFrom: joi.string().required(),
       dateTo: types.date.required(),
-      comment: joi.string().required(),
+      comment: joi.string(),
       priceFrom: joi
         .number()
         .integer()

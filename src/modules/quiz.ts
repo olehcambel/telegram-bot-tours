@@ -73,11 +73,12 @@ export const updateDef: UpdateDef = {
 const getSelect = (method: QuestionKey, defaultTable: string): string[] => {
   return Object.entries(updateDef[method]).map(([key, value]) => {
     return value.selector ? value.selector : `${defaultTable}.${key}`;
-    // value.buttonText
   });
 };
 
 export const quizDefinition: QuizDefinition = {
+  getString: [{ prop: 'string', validate: type.string }],
+
   createTour: [
     {
       prop: 'country',
@@ -88,7 +89,7 @@ export const quizDefinition: QuizDefinition = {
       prop: 'peopleCount',
       isI18n: true,
       message: 'quiz.createTour.peopleCount',
-      validate: type.id,
+      validate: type.string.regex(/^\d+\s?a(\s\d+\s?c)?$/),
     },
     {
       prop: 'dateFrom',
@@ -109,27 +110,19 @@ export const quizDefinition: QuizDefinition = {
       message: 'quiz.createTour.price',
       validate: type.string.regex(/^(\d+)?\s?-\s?(\d+)?$/).error(() => 'validate.price'),
     },
-    {
-      prop: 'comment',
-      isI18n: true,
-      message: 'quiz.createTour.comment',
-      // attachment: Markup.inlineKeyboard([Markup.callbackButton('btn.skip', '-')]).extra(),
-      validate: type.string,
-    },
+    // {
+    //   prop: 'comment',
+    //   isI18n: true,
+    //   message: 'quiz.createTour.comment',
+    // attachment: Markup.inlineKeyboard([Markup.callbackButton('btn.skip', '-')]).extra(),
+    //   validate: type.string,
+    // },
     {
       prop: 'confirm',
       funcName: 'confirm',
       intercept: 'getSqlMe',
       validate: type.string.only('ok'),
     },
-  ],
-
-  register: [
-    { prop: 'firstName', message: 'enter.firstName', validate: type.string.max(50) },
-    { prop: 'lastName', message: 'enter.lastName', validate: type.string.max(50) },
-    { prop: 'phone', message: 'enter.phone', validate: type.string },
-    { prop: 'email', message: 'enter.email', validate: type.string.email() },
-    { prop: 'confirm', funcName: 'confirm', validate: type.string.only('ok') },
   ],
 
   settings: [
@@ -223,7 +216,7 @@ export const quizFunctions = {
     }
 
     return [
-      `Edit info. \n\n${botMessage.join('\n')}`,
+      `${ctx.i18n.t('other.editInfo')} \n\n${botMessage.join('\n')}`,
       Markup.inlineKeyboard(attachment, { columns: 2 }),
     ];
   },

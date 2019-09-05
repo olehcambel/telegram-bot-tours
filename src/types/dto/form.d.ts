@@ -5,7 +5,7 @@ import Form from '../../entity/form';
 type Extracted = 'user' | 'formStatus' | 'currency' | 'country';
 
 // Partial<Form> as id: required
-type NonRelation = Omit<Form, Extracted | 'id'>;
+type NonRelation = Omit<Form, Extracted | 'id' | 'createdAt' | 'updatedAt'>;
 
 export type FormDto = NonRelation & Record<Extracted, number>;
 

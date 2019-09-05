@@ -13,7 +13,7 @@
   "messages": {
     "cancel": "❌ Command was cancelled.",
     "notFound": "Unrecognized command. Say what? Try /menu",
-    "success": "👌 Success. Command finished",
+    "success": "👌 Success.",
     "fail": "Oops 🙁, something went wrong"
   },
   "validate": {
@@ -30,7 +30,8 @@
       "dateTo": "Choose the end date of the tour ✈️",
       "price": "💸 How much money are you ready to spend for your trip? For example: '- 200' or '200 -' or '200 - 500'",
       "comment": "Please leave comment if you want to ask something",
-      "finish": "Thank you so much for your time! Have a nice day. 😊"
+      "finish": "Thank you so much for your time! Tour not found. Hovewer, your request was send to operators",
+      "found": "Thank you so much for your time! Have a nice day. 😊"
     },
     "user": {
       "firstName": "Enter First name",
@@ -46,15 +47,19 @@
     },
     "buttons": {
       "noResult": "Empty",
-      "firstName": "firstName",
-      "lastName": "lastName",
-      "email": "email",
-      "phone": "phone",
-      "username": "username",
-      "telegramCode": "telegramCode",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "username": "Username",
+      "telegramCode": "Telegram Code",
       "language": "Language",
       "name": "Name",
       "code": "Code"
+    },
+    "contact": {
+      "writeToDev": "🤔 Here you can leave a message for the Creator! Be wise though, try to express your minds fully and clearly within one message!",
+      "messageDelivered": "📬 Your message has been delivered!"
     }
   },
   "choose": {
@@ -66,6 +71,7 @@
   },
   "keyboards": {
     "quiz": {
+      "skip": " 👉 Skip",
       "back": "👈 Back",
       "cancel": "❌ Cancel",
       "reset": "⭕️ Reset"
@@ -78,7 +84,9 @@
       "contact": "✍️ Contact"
     }
   },
-  "settings": {
+  "other": {
+    "about": "Telegram bot for tour agencies with auth system, admin panel, role based access for crud using forms. Stack: telegraf, mysql, typescript, typeorm, express.\n\nYou can visit github repository to view the code, submit issues and make pull requests.\n\nFind me by *olehcambel*",
+    "editInfo": "Edit info.",
     "tgcode": "Your Telegram Code is ${code}"
   }
 }

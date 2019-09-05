@@ -1,19 +1,17 @@
 import { Transform } from 'class-transformer';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import objectTransformer from '../lib/transform';
-import Currency from './currency';
+import Country from './country';
 
 @Entity('tours')
-export default class Role {
+export default class Tour {
   @PrimaryGeneratedColumn() id: number;
 
   @Column({ length: 50 }) name: string;
 
   @Column({ length: 50 }) city: string;
 
-  @Column('text') hotelUrl: string;
-
-  @Column({ type: 'text', nullable: true }) coverUrl?: string;
+  // @Column({ length: 50 }) cityDepart: string;
 
   @Column('date') dateFrom: string;
 
@@ -21,14 +19,19 @@ export default class Role {
 
   @Column({ default: 0 }) price: number;
 
-  @Transform(objectTransformer(Currency), { toClassOnly: true })
-  @ManyToOne(() => Currency, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  currency: Currency;
+  @Column({ type: 'text', nullable: true }) description?: string;
 
-  // @Transform(objectTransformer(Country), { toClassOnly: true })
-  // @ManyToOne(() => Country, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  // country: Country;
+  @Column('text') hotelUrl: string;
 
-  // dateFrom, dateTo, price, desc, city?, hotelUrl, coverUrl, countryId, currencyId
-  // how to make title for different languages OR only in english
+  @Column({ type: 'text', nullable: true }) coverUrl?: string;
+
+  // all tours should be in one currency, not to cause problems with finding one tour
+
+  // @Transform(objectTransformer(Currency), { toClassOnly: true })
+  // @ManyToOne(() => Currency, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  // currency: Currency;
+
+  @Transform(objectTransformer(Country), { toClassOnly: true })
+  @ManyToOne(() => Country, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  country: Country;
 }
