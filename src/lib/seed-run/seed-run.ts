@@ -13,7 +13,7 @@ export default class SeedRun {
     if (!(await existsP(seedPath))) throw new Error(`Invalid path "${seedPath}"`);
 
     const files = await readdirP(seedPath);
-    files.sort();
+    // files.sort();
 
     for (const fileName of files) {
       if (/(.*)\.js$/.test(fileName)) {

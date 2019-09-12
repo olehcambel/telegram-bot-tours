@@ -89,7 +89,7 @@ export const quizDefinition: QuizDefinition = {
       prop: 'peopleCount',
       isI18n: true,
       message: 'quiz.createTour.peopleCount',
-      validate: type.string.regex(/^\d+\s?a(\s\d+\s?c)?$/),
+      validate: type.string.regex(/^\d+\s?a(\s\d+\s?c)?$/).error(() => 'error.regex'),
     },
     {
       prop: 'dateFrom',

@@ -11,7 +11,7 @@ export const boolean = joi
   .falsy(0, '0');
 export const date = joi
   .string()
-  .regex(/\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])/)
+  .regex(/\d{4}-(0[1-9]|1[012])-(0[1-9]|[12]\d|3[01])/)
   .error(() => 'enter.Date');
 
 export const type = {

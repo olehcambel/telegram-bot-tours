@@ -21,9 +21,9 @@ export default class Tour {
 
   @Column({ type: 'text', nullable: true }) description?: string;
 
-  @Column('text') hotelUrl: string;
+  @Column('tinytext') hotelUrl: string;
 
-  @Column({ type: 'text', nullable: true }) coverUrl?: string;
+  @Column({ type: 'tinytext', nullable: true }) coverUrl?: string;
 
   // all tours should be in one currency, not to cause problems with finding one tour
 

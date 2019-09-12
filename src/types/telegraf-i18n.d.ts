@@ -6,6 +6,7 @@ declare module 'telegraf-i18n' {
     locale(languageCode: string): void;
   }
 
+  // eslint-disable-next-line import/prefer-default-export
   export function match(
     resourceKey: string,
     templateData?: any,

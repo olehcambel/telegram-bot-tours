@@ -5,7 +5,7 @@ declare module 'telegraf' {
     i18n: I18n;
     session: {
       // language?: string;
-      __language_code?: string;
+      ['__language_code']?: string;
     };
   }
 }
