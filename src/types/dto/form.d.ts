@@ -1,4 +1,4 @@
-import Form from '../../entity/form';
+import Form from '../../entity/form.entity';
 
 // TODO: create abstract type to pass Extracted and Entity => Create | Update
 // TODO: autogene type from Infer <Entity>

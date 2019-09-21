@@ -1,4 +1,4 @@
-import User from '../../entity/user';
+import User from '../../entity/user.entity';
 
 type Extracted = 'role' | 'language';
 type NonRelation = Omit<User, Extracted | 'id'>;

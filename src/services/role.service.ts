@@ -1,5 +1,5 @@
 import { createQueryBuilder } from 'typeorm';
-import User from '../entity/user';
+import User from '../entity/user.entity';
 import ClientError from '../lib/errors/client';
 
 export default class Roles {

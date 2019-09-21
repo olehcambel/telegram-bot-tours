@@ -1,5 +1,5 @@
 import { DeepPartial, getRepository } from 'typeorm';
-import Currency from '../entity/currency';
+import Currency from '../entity/currency.entity';
 import { schema, validate } from '../modules/schemas';
 
 export default class Currencies {

@@ -1,5 +1,5 @@
 import { createQueryBuilder } from 'typeorm';
-import Tour from '../entity/tour';
+import Tour from '../entity/tour.entity';
 
 interface TourGet {
   price: {

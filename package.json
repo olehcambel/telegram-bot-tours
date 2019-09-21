@@ -16,7 +16,7 @@
     "format": "prettier --write \"./src/**/*.ts\"",
     "compile": "tsc -p tsconfig-app.json",
     "clean": "rm -rf build",
-    "typeorm": "npm run clean && npm run compile && node ./node_modules/.bin/typeorm",
+    "typeorm": "npm run compile && node ./node_modules/.bin/typeorm",
     "migration:generate": "npm run typeorm -- migration:generate --name",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",

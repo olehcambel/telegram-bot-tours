@@ -1,7 +1,7 @@
 import { plainToClass } from 'class-transformer';
 import { ContextMessageUpdate } from 'telegraf';
 import { getRepository } from 'typeorm';
-import User from '../entity/user';
+import User from '../entity/user.entity';
 import { type } from '../modules/joi-types';
 import { schema, validate } from '../modules/schemas';
 import { UserDto, UserDtoUpdate } from '../types/dto/user';

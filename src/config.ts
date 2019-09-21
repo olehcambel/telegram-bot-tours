@@ -12,14 +12,14 @@ config({
 });
 
 export default {
-  botToken: process.env.BOT_TOKEN!,
-  consoleLogLevel: process.env.CONSOLE_LOG_LEVEL!,
+  botToken: getEnv('BOT_TOKEN'),
+  consoleLogLevel: getEnv('CONSOLE_LOG_LEVEL'),
 
   channel: {
     isUseChannel: getEnvBool('IS_LOG_CHANNEL'),
-    logLevel: process.env.CHANNEL_LOG_LEVEL!,
-    logId: process.env.CHANNEL_LOG_ID!,
-    admin: process.env.CHANNEL_ADMIN!,
+    logLevel: getEnv('CHANNEL_LOG_LEVEL'),
+    logId: getEnv('CHANNEL_LOG_ID'),
+    admin: getEnv('CHANNEL_ADMIN'),
     support: getEnv('CHANNEL_SUPPORT'),
   },
 

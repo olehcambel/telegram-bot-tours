@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import Currency from '../entity/currency';
+import Currency from '../entity/currency.entity';
 
 export const currency = [
   {

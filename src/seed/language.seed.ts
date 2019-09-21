@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import Language from '../entity/language';
+import Language from '../entity/language.entity';
 
 export const seed = [
   {

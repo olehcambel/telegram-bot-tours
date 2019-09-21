@@ -1,6 +1,6 @@
 import { ContextMessageUpdate } from 'telegraf';
 import { createQueryBuilder } from 'typeorm';
-import User from '../entity/user';
+import User from '../entity/user.entity';
 
 export default () => async (ctx: ContextMessageUpdate, next?: () => any): Promise<any> => {
   if (!ctx.from) {

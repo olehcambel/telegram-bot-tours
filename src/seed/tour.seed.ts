@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import Tour from '../entity/tour';
+import Tour from '../entity/tour.entity';
 import CountrySeed from './country.seed';
 import CurrencySeed from './currency.seed';
 

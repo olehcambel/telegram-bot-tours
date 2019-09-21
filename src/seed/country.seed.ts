@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import Country from '../entity/country';
+import Country from '../entity/country.entity';
 
 export const seed = [
   {

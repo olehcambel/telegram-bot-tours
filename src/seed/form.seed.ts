@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import Form from '../entity/form';
+import Form from '../entity/form.entity';
 import FormStatusSeed from './form-status.seed';
 import UserSeed from './user.seed';
 import CurrencySeed from './currency.seed';

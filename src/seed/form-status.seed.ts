@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import FormStatus from '../entity/form-status';
+import FormStatus from '../entity/form-status.entity';
 
 export const seed = [
   {

@@ -1,11 +1,11 @@
 import { Schema } from '@hapi/joi';
 import { ContextMessageUpdate, Markup } from 'telegraf';
 import { createQueryBuilder, getRepository } from 'typeorm';
-import Country from '../entity/country';
-import Currency from '../entity/currency';
-import Language from '../entity/language';
-import Role from '../entity/role';
-import User from '../entity/user';
+import Country from '../entity/country.entity';
+import Currency from '../entity/currency.entity';
+import Language from '../entity/language.entity';
+import Role from '../entity/role.entity';
+import User from '../entity/user.entity';
 import ClientError from '../lib/errors/client';
 import { Attachment, PromptFunc, State } from '../types/prompt';
 import { QuestionKey } from '../types/quiz-key';

@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import User from '../entity/user';
+import User from '../entity/user.entity';
 import { EntitySeed } from '../types/entity-seed';
 import LanguageSeed from './language.seed';
 import RoleSeed from './role.seed';

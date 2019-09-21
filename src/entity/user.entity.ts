@@ -1,8 +1,8 @@
 import { Transform } from 'class-transformer';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import objectTransformer from '../lib/transform';
-import Language from './language';
-import Role from './role';
+import Language from './language.entity';
+import Role from './role.entity';
 
 @Entity('users')
 export default class User {

@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import Role from '../entity/role';
+import Role from '../entity/role.entity';
 
 export const seed = [
   {

@@ -1,10 +1,10 @@
 import { Transform } from 'class-transformer';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import objectTransformer from '../lib/transform';
-import Country from './country';
-import Currency from './currency';
-import FormStatus from './form-status';
-import User from './user';
+import Country from './country.entity';
+import Currency from './currency.entity';
+import FormStatus from './form-status.entity';
+import User from './user.entity';
 
 @Entity('forms')
 export default class Form {
