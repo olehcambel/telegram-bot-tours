@@ -104,19 +104,27 @@ export default class Prompt {
       return true;
     }
 
+    if (params.command === 'back') {
+      if (state.progress < 2) return this.reset(ctx, state);
+
+      state.setValue('progress', state.progress - 1);
+    }
+
     const question = quizDefinition[state.command];
-    const { prop, validate, intercept } = question[state.progress];
+    if (!params.command) {
+      const { prop, validate, intercept } = question[state.progress];
 
-    try {
-      if (validate) /* userMessage = */ validator(params.message, validate);
-      if (prop) state.setAnswer(prop, userMessage);
-      if (intercept) await quizInterceptors[intercept](state);
+      try {
+        if (validate) /* userMessage = */ validator(params.message, validate);
+        if (prop) state.setAnswer(prop, userMessage);
+        if (intercept) await quizInterceptors[intercept](state);
 
-      state.progress += 1;
-    } catch (error) {
-      if (error instanceof ValidateError) {
-        validateError = `${ctx.i18n.t('validate.error')} ${error.message}\n\n`;
-      } else throw error;
+        state.progress += 1;
+      } catch (error) {
+        if (error instanceof ValidateError) {
+          validateError = `${ctx.i18n.t('validate.error')} ${error.message}\n\n`;
+        } else throw error;
+      }
     }
 
     if (question.length === state.progress) {
